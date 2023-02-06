@@ -1,27 +1,29 @@
 #!/usr/bin/python3
-""" Starts a Flash Web Application """
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Sep  1 14:42:23 2020
+@author: Robinson Montes
+"""
 from models import storage
 from models.state import State
 from flask import Flask, render_template
 app = Flask(__name__)
-# app.jinja_env.trim_blocks = True
-# app.jinja_env.lstrip_blocks = True
 
 
 @app.teardown_appcontext
-def close_db(error):
-    """ Remove the current SQLAlchemy Session """
+def appcontext_teardown(self):
+    """use storage for fetching data from the storage engine
+    """
     storage.close()
 
 
 @app.route('/states_list', strict_slashes=False)
-def states_list():
-    """ displays a HTML page with a list of states """
-    states = storage.all(State).values()
-    states = sorted(states, key=lambda k: k.name)
-    return render_template('7-states_list.html', states=states)
+def state_info():
+    """Display a HTML page inside the tag BODY"""
+    return render_template('7-states_list.html',
+                           states=storage.all(State))
 
 
-if __name__ == "__main__":
-    """ Main Function """
+if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
+
